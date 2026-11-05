@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Pointage">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#24364B">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Pointage – Suayip Akyuz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF2F4; --surface:#FFFFFF; --ink:#1D2B3A; --muted:#5F6E7C; --line:#D5DDE3;
+  --in:#1F7A55; --in-soft:#DDF0E7; --out:#B9462C; --out-soft:#F7E2DC;
+  --we:#E4E9ED; --accent:#24364B; --input:#F6F8F9;
+  --mid:#3D5A80; --mid-soft:#E1E8F1;
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F171F; --surface:#18232E; --ink:#E8EEF2; --muted:#93A3B1; --line:#2A3846;
+    --in:#4CC08C; --in-soft:#173A2B; --out:#EE7F62; --out-soft:#3D2119;
+    --we:#131D26; --accent:#C9D6E2; --input:#1E2B37;
+    --mid:#8FB3E0; --mid-soft:#1D2C3E;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F171F; --surface:#18232E; --ink:#E8EEF2; --muted:#93A3B1; --line:#2A3846;
+  --in:#4CC08C; --in-soft:#173A2B; --out:#EE7F62; --out-soft:#3D2119;
+  --we:#131D26; --accent:#C9D6E2; --input:#1E2B37;
+  --mid:#8FB3E0; --mid-soft:#1D2C3E;
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+.num{font-variant-numeric:tabular-nums}
+main{max-width:520px;margin:0 auto;padding:16px 16px 40px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:4px 2px 0}
+header h1{font-size:20px;font-weight:700;margin:0}
+.brand{display:flex;align-items:center;gap:10px}
+.brand img{border-radius:9px}
+.brand small{display:block;font-size:14px;font-weight:500;color:var(--muted);line-height:1.1}
+header p{margin:0;color:var(--muted);font-size:15px;text-align:right}
+
+.clock{font-family:"Barlow Condensed","Barlow",sans-serif;font-weight:600;font-size:clamp(84px,30vw,128px);line-height:1;text-align:center;margin:18px 0 6px;letter-spacing:-.01em}
+.today{text-align:center;color:var(--muted);margin:0 0 18px;font-size:16px}
+
+.punch{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.punch button{border:0;border-radius:22px;padding:16px 8px 14px;min-height:112px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:transform .08s}
+.punch button:active{transform:scale(.97)}
+.punch .lbl{font-size:22px;font-weight:700}
+.punch .val{font-family:"Barlow Condensed","Barlow",sans-serif;font-size:30px;font-weight:600;line-height:1.1}
+.punch .hint{font-size:14px;opacity:.85}
+#btnIn{background:var(--in-soft);color:var(--in)}
+#btnOut{background:var(--out-soft);color:var(--out)}
+#btnM1,#btnM2{background:var(--mid-soft);color:var(--mid)}
+#btnM1.next,#btnM2.next{background:var(--mid);color:var(--bg)}
+#btnIn.next{background:var(--in);color:#fff}
+#btnOut.next{background:var(--out);color:#fff}
+
+.daytotal{margin:14px 0 0;background:var(--surface);border-radius:16px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
+.daytotal span{color:var(--muted)}
+.daytotal strong{font-size:24px;font-weight:700}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;padding:10px 0;font-size:15px}
+
+.month{margin-top:28px}
+.mhead{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.mhead h2{margin:0;font-size:22px;font-weight:700;text-transform:capitalize}
+.nav{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface);font-size:22px;line-height:1}
+.msum{display:flex;gap:10px;margin:12px 0}
+.msum div{flex:1;background:var(--accent);color:var(--bg);border-radius:16px;padding:12px 14px}
+.msum b{display:block;font-family:"Barlow Condensed","Barlow",sans-serif;font-size:30px;font-weight:600;line-height:1.1}
+.msum small{font-size:14px;opacity:.85}
+
+.list{background:var(--surface);border-radius:16px;overflow:hidden}
+.row{display:grid;grid-template-columns:52px 1fr 1fr 58px;gap:4px;align-items:center;width:100%;border:0;border-bottom:1px solid var(--line);background:transparent;padding:12px 14px;text-align:left;min-height:52px}
+.row:last-child{border-bottom:0}
+.row.we{background:var(--we)}
+.row.now{box-shadow:inset 4px 0 0 var(--in)}
+.row .d{font-weight:600}
+.row .d small{display:block;color:var(--muted);font-weight:400;font-size:13px}
+.row .t{color:var(--muted);font-size:15px}
+.row .t.f{color:var(--ink)}
+.row .tot{text-align:right;font-weight:700}
+.listhead{display:grid;grid-template-columns:52px 1fr 1fr 58px;gap:4px;padding:0 14px 6px;color:var(--muted);font-size:13px}
+.listhead span:last-child{text-align:right}
+
+.actions{display:grid;gap:10px;margin-top:18px}
+.big{border:0;border-radius:16px;padding:16px;font-size:18px;font-weight:600;background:var(--accent);color:var(--bg)}
+.ghost{border:1px solid var(--line);border-radius:16px;padding:14px;font-size:16px;background:var(--surface)}
+.warn{background:var(--out-soft);color:var(--out);border-radius:14px;padding:12px 14px;font-size:15px;margin-top:14px}
+
+/* feuille d'édition */
+.scrim{position:fixed;inset:0;background:rgba(10,18,26,.45);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.scrim.open{display:flex}
+.sheet{background:var(--surface);width:100%;max-width:520px;border-radius:22px 22px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom,0px));max-height:90vh;overflow:auto}
+.sheet h3{margin:0 0 14px;font-size:21px;text-transform:capitalize}
+.field{display:grid;grid-template-columns:1fr 1.3fr;align-items:center;gap:10px;margin-bottom:12px}
+.field label{font-weight:600}
+.field input,.field select,textarea{font:inherit;font-size:20px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--input);color:var(--ink);width:100%;min-height:52px}
+textarea{font-size:14px;min-height:160px;font-family:ui-monospace,Menlo,monospace}
+.sheet .tot{display:flex;justify-content:space-between;padding:12px 2px;border-top:1px solid var(--line);margin-top:4px;font-size:18px}
+.sheet .btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.del{border:1px solid var(--out);color:var(--out);background:transparent;border-radius:14px;padding:14px;font-size:16px;font-weight:600}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--accent);color:var(--bg);padding:12px 18px;border-radius:14px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s;z-index:30;max-width:90vw;text-align:center}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1 class="brand"><img src="apple-touch-icon.png" alt="" width="34" height="34"><span>Pointage<small>Suayip Akyuz</small></span></h1>
+    <p id="dateLong"></p>
+  </header>
+
+  <div class="clock num" id="clock" aria-live="off">--:--</div>
+  <p class="today">Appuie sur un bouton pour pointer à l’heure qu’il est.</p>
+
+  <section class="punch" aria-label="Pointage du jour">
+    <button id="btnIn" type="button">
+      <span class="lbl">Arrivée</span>
+      <span class="val num" id="valIn">--:--</span>
+      <span class="hint" id="hintIn">Je commence</span>
+    </button>
+    <button id="btnM1" type="button">
+      <span class="lbl">Pause midi</span>
+      <span class="val num" id="valM1">--:--</span>
+      <span class="hint" id="hintM1">Je pars manger</span>
+    </button>
+    <button id="btnM2" type="button">
+      <span class="lbl">Reprise</span>
+      <span class="val num" id="valM2">--:--</span>
+      <span class="hint" id="hintM2">Je reprends</span>
+    </button>
+    <button id="btnOut" type="button">
+      <span class="lbl">Départ</span>
+      <span class="val num" id="valOut">--:--</span>
+      <span class="hint" id="hintOut">Je termine</span>
+    </button>
+  </section>
+
+  <div class="daytotal">
+    <span>Total aujourd’hui</span>
+    <strong class="num" id="todayTotal">0 h 00</strong>
+  </div>
+  <button class="linkbtn" type="button" id="editToday">Corriger les heures d’aujourd’hui</button>
+
+  <div id="storageWarn" class="warn" hidden>Les heures ne peuvent pas être enregistrées sur ce téléphone. Ouvre l’appli par son icône sur l’écran d’accueil.</div>
+
+  <section class="month">
+    <div class="mhead">
+      <button class="nav" type="button" id="prev" aria-label="Mois précédent">‹</button>
+      <h2 id="mTitle"></h2>
+      <button class="nav" type="button" id="next" aria-label="Mois suivant">›</button>
+    </div>
+    <div class="msum">
+      <div><b class="num" id="mHours">0 h 00</b><small>heures du mois</small></div>
+      <div><b class="num" id="mDays">0</b><small>jours travaillés</small></div>
+    </div>
+    <div class="listhead"><span>Jour</span><span>Matin</span><span>Après-midi</span><span>Total</span></div>
+    <div class="list" id="list"></div>
+    <p class="today" style="margin-top:10px">Touche un jour pour ajouter ou corriger ses heures.</p>
+
+    <div class="actions">
+      <button class="big" type="button" id="share">Envoyer le relevé du mois</button>
+      <button class="ghost" type="button" id="backup">Sauvegarder ou restaurer les données</button>
+    </div>
+  </section>
+</main>
+
+<div class="scrim" id="scrim">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sTitle">
+    <h3 id="sTitle"></h3>
+    <div class="field"><label for="fIn">Arrivée</label><input type="time" id="fIn"></div>
+    <div class="field"><label for="fM1">Pause midi</label><input type="time" id="fM1"></div>
+    <div class="field"><label for="fM2">Reprise</label><input type="time" id="fM2"></div>
+    <div class="field"><label for="fOut">Départ</label><input type="time" id="fOut"></div>
+    <p style="margin:0 0 8px;color:var(--muted);font-size:14px">Pas de pause ce jour-là ? Laisse « Pause midi » et « Reprise » vides.</p>
+    <div class="tot"><span>Total</span><strong class="num" id="sTot">0 h 00</strong></div>
+    <div class="btns">
+      <button class="del" type="button" id="sDel">Effacer le jour</button>
+      <button class="big" type="button" id="sSave">Enregistrer</button>
+    </div>
+    <button class="linkbtn" type="button" id="sCancel" style="width:100%">Annuler</button>
+  </div>
+</div>
+
+<div class="scrim" id="scrimB">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="bTitle">
+    <h3 id="bTitle" style="text-transform:none">Sauvegarde</h3>
+    <p style="margin:0 0 10px;color:var(--muted);font-size:15px">Copie ce texte et envoie-le-toi par message pour garder une copie. Pour restaurer, colle un texte de sauvegarde ici puis touche « Restaurer ».</p>
+    <textarea id="bText" spellcheck="false"></textarea>
+    <div class="btns">
+      <button class="ghost" type="button" id="bCopy">Copier</button>
+      <button class="big" type="button" id="bRestore">Restaurer</button>
+    </div>
+    <button class="linkbtn" type="button" id="bClose" style="width:100%">Fermer</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+  var KEY = "pointage-suayip-v1";
+  var MOIS = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+  var JOURS = ["dim.","lun.","mar.","mer.","jeu.","ven.","sam."];
+  var JOURS_L = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
+  var data = {};
+  var storageOk = true;
+
+  function load(){
+    try{ var raw = localStorage.getItem(KEY); data = raw ? JSON.parse(raw) : {}; if(typeof data!=="object"||!data) data={}; }
+    catch(e){ data = {}; storageOk = false; }
+  }
+  function save(){
+    try{ localStorage.setItem(KEY, JSON.stringify(data)); }
+    catch(e){ storageOk = false; }
+    document.getElementById("storageWarn").hidden = storageOk;
+  }
+
+  function pad(n){ return (n<10?"0":"")+n; }
+  function keyOf(d){ return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+  function hm(d){ return pad(d.getHours())+":"+pad(d.getMinutes()); }
+  function toMin(t){ if(!t) return null; var p=t.split(":"); return (+p[0])*60+(+p[1]); }
+  function span(x,y){ if(!x||!y) return 0; var m=toMin(y)-toMin(x); if(m<0) m+=1440; return m; }
+  function minutesOf(e){
+    if(!e) return 0;
+    var m=0;
+    if(e.m1||e.m2){ m=span(e.a,e.m1)+span(e.m2,e.d); }
+    else if(e.a&&e.d){ m=span(e.a,e.d)-(+e.p||0); }
+    return Math.max(0,m);
+  }
+  function liveMinutes(e,nowHm){
+    if(!e||!e.a||e.d) return {m:minutesOf(e),st:""};
+    if(e.m1&&!e.m2) return {m:span(e.a,e.m1),st:" en pause"};
+    if(e.m2) return {m:span(e.a,e.m1)+span(e.m2,nowHm),st:" en cours"};
+    return {m:span(e.a,nowHm),st:" en cours"};
+  }
+  function rangeTxt(x,y){ if(!x&&!y) return "–"; return (x||"--:--")+"–"+(y||""); }
+  function parts(e){
+    if(e.m1||e.m2) return [rangeTxt(e.a,e.m1), rangeTxt(e.m2,e.d)];
+    return [rangeTxt(e.a,e.d), "–"];
+  }
+  function fmt(m){ return Math.floor(m/60)+" h "+pad(m%60); }
+  function dec(m){ return (m/60).toFixed(2).replace(".",","); }
+
+  var view = new Date(); view.setDate(1);
+
+  function toast(msg){
+    var t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show");
+    clearTimeout(toast._t); toast._t=setTimeout(function(){t.classList.remove("show");},2200);
+  }
+
+  function renderToday(){
+    var now=new Date(), k=keyOf(now), e=data[k]||{};
+    document.getElementById("clock").textContent = hm(now);
+    document.getElementById("dateLong").textContent = JOURS_L[now.getDay()]+" "+now.getDate()+" "+MOIS[now.getMonth()];
+    function setBtn(id,v,hint,isNext){
+      document.getElementById("val"+id).textContent = v||"--:--";
+      document.getElementById("hint"+id).textContent = v ? "Pointé" : hint;
+      document.getElementById("btn"+id).classList.toggle("next", isNext);
+    }
+    setBtn("In", e.a, "Je commence", !e.a);
+    setBtn("M1", e.m1, "Je pars manger", !!e.a && !e.m1 && !e.d);
+    setBtn("M2", e.m2, "Je reprends", !!e.m1 && !e.m2 && !e.d);
+    setBtn("Out", e.d, "Je termine", !!e.a && !e.d && !(e.m1 && !e.m2));
+    var L = liveMinutes(e, hm(now));
+    document.getElementById("todayTotal").textContent = fmt(L.m) + L.st;
+  }
+
+  function renderMonth(){
+    var y=view.getFullYear(), mo=view.getMonth();
+    document.getElementById("mTitle").textContent = MOIS[mo]+" "+y;
+    var last=new Date(y,mo+1,0).getDate(), list=document.getElementById("list");
+    list.textContent="";
+    var total=0, days=0, todayK=keyOf(new Date());
+    for(var d=1; d<=last; d++){
+      var dt=new Date(y,mo,d), k=keyOf(dt), e=data[k]||{}, m=minutesOf(e);
+      if(m>0){ total+=m; days++; }
+      var b=document.createElement("button");
+      b.type="button"; b.className="row"+((dt.getDay()===0||dt.getDay()===6)?" we":"")+(k===todayK?" now":"");
+      b.dataset.k=k;
+      var c1=document.createElement("span"); c1.className="d num"; c1.textContent=d;
+      var s=document.createElement("small"); s.textContent=JOURS[dt.getDay()]; c1.appendChild(s);
+      var pp=parts(e);
+      var c2=document.createElement("span"); c2.className="t num"+(pp[0]!=="–"?" f":""); c2.textContent=pp[0];
+      var c3=document.createElement("span"); c3.className="t num"+(pp[1]!=="–"?" f":""); c3.textContent=pp[1];
+      var c4=document.createElement("span"); c4.className="tot num"; c4.textContent=m?fmt(m):"";
+      b.append(c1,c2,c3,c4);
+      b.setAttribute("aria-label", JOURS_L[dt.getDay()]+" "+d+", matin "+pp[0]+", après-midi "+pp[1]+(m?", total "+fmt(m):""));
+      b.addEventListener("click", function(){ openSheet(this.dataset.k); });
+      list.appendChild(b);
+    }
+    document.getElementById("mHours").textContent = fmt(total);
+    document.getElementById("mDays").textContent = days;
+  }
+
+  function renderAll(){ renderToday(); renderMonth(); }
+
+  document.getElementById("btnIn").addEventListener("click", function(){
+    var now=new Date(), k=keyOf(now), e=data[k]||{};
+    if(e.a && !confirm("Arrivée déjà pointée à "+e.a+". La remplacer par "+hm(now)+" ?")) return;
+    e.a=hm(now); data[k]=e; save(); renderAll(); toast("Arrivée pointée à "+e.a);
+  });
+  document.getElementById("btnM1").addEventListener("click", function(){
+    var now=new Date(), k=keyOf(now), e=data[k]||{};
+    if(!e.a){ toast("Pointe d’abord l’arrivée, ou corrige le jour."); return; }
+    if(e.d){ toast("Le départ est déjà pointé. Corrige le jour si besoin."); return; }
+    if(e.m1 && !confirm("Pause déjà pointée à "+e.m1+". La remplacer par "+hm(now)+" ?")) return;
+    e.m1=hm(now); data[k]=e; save(); renderAll(); toast("Pause midi pointée à "+e.m1+", bon appétit");
+  });
+  document.getElementById("btnM2").addEventListener("click", function(){
+    var now=new Date(), k=keyOf(now), e=data[k]||{};
+    if(!e.m1){ toast("Pointe d’abord la pause midi, ou corrige le jour."); return; }
+    if(e.d){ toast("Le départ est déjà pointé. Corrige le jour si besoin."); return; }
+    if(e.m2 && !confirm("Reprise déjà pointée à "+e.m2+". La remplacer par "+hm(now)+" ?")) return;
+    e.m2=hm(now); data[k]=e; save(); renderAll(); toast("Reprise pointée à "+e.m2+", pause de "+fmt(span(e.m1,e.m2)));
+  });
+  document.getElementById("btnOut").addEventListener("click", function(){
+    var now=new Date(), k=keyOf(now), e=data[k]||{};
+    if(!e.a){ toast("Pointe d’abord l’arrivée, ou corrige le jour."); return; }
+    if(e.m1 && !e.m2){ toast("Pointe d’abord la reprise, ou corrige le jour."); return; }
+    if(e.d && !confirm("Départ déjà pointé à "+e.d+". Le remplacer par "+hm(now)+" ?")) return;
+    e.d=hm(now); data[k]=e; save(); renderAll(); toast("Départ pointé à "+e.d+", total "+fmt(minutesOf(e)));
+  });
+
+  // Feuille d'édition
+  var editing=null, scrim=document.getElementById("scrim");
+  var fIn=document.getElementById("fIn"), fOut=document.getElementById("fOut"), fM1=document.getElementById("fM1"), fM2=document.getElementById("fM2");
+  function sheetTotal(){ document.getElementById("sTot").textContent = fmt(minutesOf({a:fIn.value,m1:fM1.value,m2:fM2.value,d:fOut.value})); }
+  function openSheet(k){
+    editing=k; var e=data[k]||{}, p=k.split("-"), dt=new Date(+p[0],+p[1]-1,+p[2]);
+    document.getElementById("sTitle").textContent = JOURS_L[dt.getDay()]+" "+dt.getDate()+" "+MOIS[dt.getMonth()];
+    fIn.value=e.a||""; fM1.value=e.m1||""; fM2.value=e.m2||""; fOut.value=e.d||""; sheetTotal();
+    scrim.classList.add("open");
+  }
+  function closeSheet(){ scrim.classList.remove("open"); editing=null; }
+  [fIn,fM1,fM2,fOut].forEach(function(el){ el.addEventListener("input", sheetTotal); el.addEventListener("change", sheetTotal); });
+  document.getElementById("sSave").addEventListener("click", function(){
+    if(!!fM1.value !== !!fM2.value){ toast("Remplis la pause midi et la reprise, ou laisse les deux vides."); return; }
+    if(!fIn.value && !fM1.value && !fM2.value && !fOut.value){ delete data[editing]; }
+    else data[editing]={a:fIn.value||"", m1:fM1.value||"", m2:fM2.value||"", d:fOut.value||""};
+    save(); closeSheet(); renderAll(); toast("Enregistré");
+  });
+  document.getElementById("sDel").addEventListener("click", function(){
+    if(!confirm("Effacer les heures de ce jour ?")) return;
+    delete data[editing]; save(); closeSheet(); renderAll(); toast("Jour effacé");
+  });
+  document.getElementById("sCancel").addEventListener("click", closeSheet);
+  scrim.addEventListener("click", function(ev){ if(ev.target===scrim) closeSheet(); });
+  document.getElementById("editToday").addEventListener("click", function(){ openSheet(keyOf(new Date())); });
+
+  document.getElementById("prev").addEventListener("click", function(){ view.setMonth(view.getMonth()-1); renderMonth(); });
+  document.getElementById("next").addEventListener("click", function(){ view.setMonth(view.getMonth()+1); renderMonth(); });
+
+  // Relevé du mois
+  function monthText(){
+    var y=view.getFullYear(), mo=view.getMonth(), last=new Date(y,mo+1,0).getDate();
+    var lines=["Relevé d’heures – Suayip AKYUZ – "+MOIS[mo]+" "+y, ""], total=0, days=0;
+    for(var d=1; d<=last; d++){
+      var dt=new Date(y,mo,d), e=data[keyOf(dt)];
+      if(!e||(!e.a&&!e.d&&!e.m1&&!e.m2)) continue;
+      var m=minutesOf(e); total+=m; if(m>0) days++;
+      var pp=parts(e);
+      lines.push(pad(d)+"/"+pad(mo+1)+" ("+JOURS[dt.getDay()]+")  "+pp[0]+(pp[1]!=="–"?" / "+pp[1]:"")+"  = "+fmt(m));
+    }
+    lines.push("", "Jours travaillés : "+days, "Total : "+fmt(total)+" ("+dec(total)+" h)");
+    return lines.join("\n");
+  }
+  function copyText(txt, okMsg){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(function(){ toast(okMsg); }, function(){ showText(txt); });
+    } else showText(txt);
+  }
+  function showText(txt){
+    openBackup(); document.getElementById("bText").value=txt;
+    toast("Sélectionne le texte et copie-le");
+  }
+  document.getElementById("share").addEventListener("click", function(){
+    var txt=monthText();
+    if(navigator.share){
+      navigator.share({title:"Relevé d’heures", text:txt}).catch(function(err){
+        if(err && err.name==="AbortError") return;
+        copyText(txt, "Relevé copié, colle-le dans un message");
+      });
+    } else copyText(txt, "Relevé copié, colle-le dans un message");
+  });
+
+  // Sauvegarde
+  var scrimB=document.getElementById("scrimB");
+  function openBackup(){ document.getElementById("bText").value=JSON.stringify(data); scrimB.classList.add("open"); }
+  document.getElementById("backup").addEventListener("click", openBackup);
+  document.getElementById("bClose").addEventListener("click", function(){ scrimB.classList.remove("open"); });
+  scrimB.addEventListener("click", function(ev){ if(ev.target===scrimB) scrimB.classList.remove("open"); });
+  document.getElementById("bCopy").addEventListener("click", function(){ copyText(document.getElementById("bText").value, "Copié"); });
+  document.getElementById("bRestore").addEventListener("click", function(){
+    var raw=document.getElementById("bText").value.trim(), obj;
+    try{ obj=JSON.parse(raw); }catch(e){ toast("Ce texte n’est pas une sauvegarde valide"); return; }
+    if(!obj||typeof obj!=="object"||Array.isArray(obj)){ toast("Ce texte n’est pas une sauvegarde valide"); return; }
+    if(!confirm("Remplacer les heures enregistrées par cette sauvegarde ?")) return;
+    data=obj; save(); scrimB.classList.remove("open"); renderAll(); toast("Données restaurées");
+  });
+
+  if(navigator.storage && navigator.storage.persist){ navigator.storage.persist().catch(function(){}); }
+  if("serviceWorker" in navigator && location.protocol==="https:"){ navigator.serviceWorker.register("sw.js").catch(function(){}); }
+  load();
+  try{ localStorage.setItem(KEY+"-test","1"); localStorage.removeItem(KEY+"-test"); }catch(e){ storageOk=false; }
+  document.getElementById("storageWarn").hidden = storageOk;
+  renderAll();
+  setInterval(renderToday, 15000);
+  document.addEventListener("visibilitychange", function(){ if(!document.hidden) renderAll(); });
+})();
+</script>
+</body>
+</html>
